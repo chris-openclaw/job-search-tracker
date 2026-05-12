@@ -1,6 +1,10 @@
 ---
 name: job-search-tracker
-description: "Use this skill when someone is job searching, tracking applications, or needs help at any stage of the hiring pipeline. Key triggers: 'I applied to,' 'just submitted an application,' 'track this job,' 'job search dashboard,' 'what needs attention,' 'any responses yet,' 'help me follow up,' 'haven't heard back,' 'prep me for an interview,' 'interview tomorrow,' 'draft a cover letter,' 'write a follow-up email,' 'thank-you note,' 'got rejected,' 'got an offer,' 'what jobs have I applied to,' 'check my email for applications,' referencing a specific company they've applied to. Covers: application tracking, pipeline management, stale application reminders, Gmail scanning for application emails, LinkedIn application tracking, interview prep with company briefs and mock questions, cover letter drafting, follow-up email drafting, and job search analytics."
+version: 1.1.0
+description: "Use this skill when someone is job searching, tracking applications, or needs help at any stage of the hiring pipeline. Key triggers: 'I applied to,' 'just submitted an application,' 'track this job,' 'job search dashboard,' 'what needs attention,' 'any responses yet,' 'help me follow up,' 'haven't heard back,' 'prep me for an interview,' 'interview tomorrow,' 'draft a cover letter,' 'write a follow-up email,' 'thank-you note,' 'got rejected,' 'got an offer,' 'got an offer letter,' 'help me negotiate,' 'salary negotiation,' 'which resume should I send,' 'does this sound desperate,' 'what jobs have I applied to,' 'check my email for applications,' referencing a specific company they've applied to. Covers: application tracking, pipeline management, stale application reminders, Gmail scanning for application emails, LinkedIn application tracking, interview prep with company briefs and mock questions, cover letter drafting, follow-up email drafting, salary negotiation support, resume-version recommendations, outreach tone checks, and job search analytics."
+metadata:
+  openclaw:
+    emoji: 🎯
 ---
 
 # Job Search Tracker
@@ -120,6 +124,38 @@ If LinkedIn isn't accessible, fall back to web search for company research. The 
 
 ---
 
+## Resume Recommender
+
+Many users keep multiple resume variants tailored to different job types (e.g., "engineering-focused," "leadership-focused," "generalist"). This skill can suggest the best variant for a given posting.
+
+### Storing resume variants
+
+Resumes live in a `resumes/` directory alongside `applications.md`. Each variant is a markdown or text file named for its slant:
+
+```
+resumes/
+  engineering-focused.md
+  leadership-focused.md
+  generalist.md
+```
+
+Each file should start with a one-paragraph self-description that summarizes the angle it takes. The skill reads these descriptions to make recommendations. It does not need the full resume content for matching, just the description block at the top.
+
+### Recommending a variant
+
+When the user adds a new application, asks "which resume should I send?", or pastes a job posting:
+
+1. Read the job posting (from URL, pasted text, or the tracker entry)
+2. Read each resume's self-description from `resumes/`
+3. Extract key signals from the posting: required skills, seniority level, team size, company size, work style cues (remote/hybrid/onsite, IC vs management)
+4. Recommend the variant whose self-description best matches those signals
+5. Present the recommendation with a one-line rationale: "Suggested: leadership-focused.md (the posting emphasizes managing a cross-functional team and reporting to a VP)"
+6. Offer to log the choice to the tracker entry's `Resume Version` field
+
+If no `resumes/` directory exists, prompt the user once: "I don't see saved resume variants. Want to set up the `resumes/` folder, or just track which version you sent each time?" Don't badger after the initial prompt; respect "no" the first time.
+
+---
+
 ## Proactive Reminders and Follow-ups
 
 This is one of the most valuable features. Job seekers lose opportunities by not following up.
@@ -209,6 +245,35 @@ After an interview:
    - Is genuine, not formulaic
 3. One thank-you per interviewer if they met multiple people, with slight variations so they don't look identical if compared
 
+### Tone check on user drafts
+
+When the user pastes their own draft and asks for a check (or says "does this sound desperate," "is this templated," "does this sound okay"), run a quick tone pass before they send.
+
+**Flag categories**
+
+- **Desperate signals**: "I'll do anything," "any role," "please consider me," stacked over-thanking ("thank you so much for your time" appearing twice), excessive flexibility statements ("I'm open to anything," "happy to start whenever")
+- **Templated signals**: openings like "I hope this email finds you well," "I am writing to," generic praise of the company ("a leader in the industry," "world-class team"), zero specifics pulled from the actual job posting or prior conversation
+- **Negative framing**: apologizing for gaps, leading with weakness, "I know I'm a long shot," "I may not have all the qualifications but"
+- **Length issues**: follow-ups over 200 words, cover letter paragraphs over 5 sentences, opening paragraph that doesn't get to the point in 2 sentences
+
+**Output format**
+
+```
+Tone read: [Tight | Mostly fine, some flags | Needs work]
+
+Flags found:
+1. [Category] — "[exact phrase from draft]" — why it lands flat
+2. ...
+
+Suggested revisions:
+- "[phrase]" → "[better phrase]"
+- ...
+```
+
+If the draft is already tight, say so directly: "Reads well. Nothing to fix. Ready to send."
+
+Do not rewrite the entire draft unless the user asks. The goal is a targeted edit, not a full rewrite that erases their voice.
+
 ---
 
 ## Interview Prep
@@ -244,6 +309,49 @@ For each question, provide a brief outline of a strong answer structure, not a f
 
 ---
 
+## Salary Negotiation
+
+When the user reports an offer (triggers like "got an offer," "they made me an offer," "offer letter came in," "they came in at X"), shift into negotiation support mode.
+
+### First-pass triage
+
+1. Update the tracker: status → Offer, add timeline entry with the offer details
+2. Pull context from the entry: what range was discussed at application or screen, what was on the posting, how the conversation progressed
+3. Ask three quick questions if not already known:
+   - What's the base offer, and any equity, sign-on, or bonus structure?
+   - What was the original range they signaled?
+   - How does this compare to your target and your floor?
+
+### Counter-offer analysis
+
+Based on tracker context:
+
+- Calculate deltas: offer vs. low/mid/high of the posted range, vs. the user's target, vs. their floor
+- Identify which components have negotiation room. Base usually has the most. Sign-on is often easier to move than base because it doesn't affect headcount budget. Equity is frequently flexible at senior levels. Vacation, start date, and remote/onsite are sometimes negotiable.
+- Suggest a specific counter, not a vague "ask for more." Example: "Counter at $X base + $Y sign-on. That's the high end of their stated range plus a sign-on that closes the gap to your target."
+
+### Counter-offer draft
+
+If the user wants help responding:
+
+1. Draft a short, professional message that:
+   - Opens with one sentence of genuine enthusiasm about the role (not gushing)
+   - States the counter clearly and specifically
+   - Anchors the counter in something concrete: market data, the original posted range, the scope of the role, or a competing interest
+   - Leaves room to land somewhere in between
+   - Does not apologize for negotiating
+2. Avoid ultimatum framing unless the user explicitly wants to walk
+3. Save the draft to the tracker timeline
+
+### Things to flag
+
+- **Exploding offers** (deadline under 48 hours): a pressure tactic. Suggest the user ask for more time. "I want to give this the consideration it deserves; could we extend the deadline by a few days?"
+- **Verbal-only offers**: prompt the user to get it in writing before negotiating
+- **Below-range offers**: if the offer is below the posting's stated range, surface that directly. It's a meaningful signal about how the relationship will go.
+- **Total comp framing**: if the company emphasizes total comp heavily (equity-weighted, OTE-weighted), break it down to what's actually guaranteed cash
+
+---
+
 ## Common Workflows
 
 **"I just applied to a job"**
@@ -274,6 +382,24 @@ For each question, provide a brief outline of a strong answer structure, not a f
 2. Brief empathy (one line, not a pep talk)
 3. Suggest: "Want to draft a gracious response? Sometimes it keeps the door open for future roles."
 4. Move on to what's still active
+
+**"I got an offer"**
+1. Update status to Offer, add timeline entry with offer details (base, equity, sign-on, deadline)
+2. Pull tracker context: original range, conversations, what was promised
+3. Run counter-offer analysis: gap to target, which components have room
+4. Offer to draft a counter and log it to the timeline
+5. Flag any pressure tactics (exploding offer, verbal-only, below-range)
+
+**"Which resume should I send?"**
+1. Read the posting (URL, pasted text, or tracker entry)
+2. Read each resume's self-description from `resumes/`
+3. Recommend the best-fit variant with a one-line rationale
+4. Offer to log the choice in the tracker
+
+**"Does this sound desperate / templated?"**
+1. Run the tone check pass on the pasted draft
+2. Flag specific phrases, not the whole draft
+3. Suggest targeted revisions (don't rewrite top to bottom unless asked)
 
 ---
 
