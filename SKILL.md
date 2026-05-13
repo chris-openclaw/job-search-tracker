@@ -1,6 +1,6 @@
 ---
 name: job-search-tracker
-version: 1.1.0
+version: "1.1.0"
 description: "Use this skill when someone is job searching, tracking applications, or needs help at any stage of the hiring pipeline. Key triggers: 'I applied to,' 'just submitted an application,' 'track this job,' 'job search dashboard,' 'what needs attention,' 'any responses yet,' 'help me follow up,' 'haven't heard back,' 'prep me for an interview,' 'interview tomorrow,' 'draft a cover letter,' 'write a follow-up email,' 'thank-you note,' 'got rejected,' 'got an offer,' 'got an offer letter,' 'help me negotiate,' 'salary negotiation,' 'which resume should I send,' 'does this sound desperate,' 'what jobs have I applied to,' 'check my email for applications,' referencing a specific company they've applied to. Covers: application tracking, pipeline management, stale application reminders, Gmail scanning for application emails, LinkedIn application tracking, interview prep with company briefs and mock questions, cover letter drafting, follow-up email drafting, salary negotiation support, resume-version recommendations, outreach tone checks, and job search analytics."
 metadata:
   openclaw:
