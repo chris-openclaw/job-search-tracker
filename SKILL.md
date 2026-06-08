@@ -1,7 +1,7 @@
 ---
 name: job-search-tracker
-version: 1.1.1
-description: "Use this skill when someone is job searching, tracking applications, or needs help at any stage of the hiring pipeline. Key triggers: 'I applied to,' 'just submitted an application,' 'track this job,' 'job search dashboard,' 'what needs attention,' 'any responses yet,' 'help me follow up,' 'haven't heard back,' 'prep me for an interview,' 'interview tomorrow,' 'draft a cover letter,' 'write a follow-up email,' 'thank-you note,' 'got rejected,' 'got an offer,' 'got an offer letter,' 'help me negotiate,' 'salary negotiation,' 'which resume should I send,' 'does this sound desperate,' 'what jobs have I applied to,' 'check my email for applications,' referencing a specific company they've applied to. Covers: application tracking, pipeline management, stale application reminders, Gmail scanning for application emails, LinkedIn application tracking, interview prep with company briefs and mock questions, cover letter drafting, follow-up email drafting, salary negotiation support, resume-version recommendations, outreach tone checks, and job search analytics."
+version: 1.1.2
+description: "Use this skill when someone is actively managing a job search and references applications, interviews, offers, or recruiter communication. Specific triggers: 'I applied to [company],' 'just submitted an application,' 'track this job,' 'job search dashboard,' 'what jobs have I applied to,' 'any responses from [company] yet,' 'haven't heard back from [company],' 'prep me for the [company] interview,' 'draft a cover letter for [company/role],' 'write a follow-up email to [company/recruiter],' 'thank-you note for the [company] interview,' 'got rejected from [company],' 'got an offer from [company],' 'help me negotiate the [company] offer,' 'salary negotiation,' 'which resume should I send for [posting],' 'does this [draft] sound desperate or templated,' or any message that explicitly names a company in a hiring context. Do NOT trigger on general productivity questions, calendar requests, or unrelated email tasks. Covers: application tracking in a local markdown file, stale-application detection, follow-up and cover-letter drafting with tracker context, interview prep, salary negotiation analysis and counter-offer drafting, tone checks on user drafts, resume-variant recommendations, and optional Gmail/LinkedIn lookups (user-mediated, see Data Handling)."
 metadata:
   openclaw:
     emoji: 🎯
@@ -405,14 +405,22 @@ If the user wants help responding:
 
 ## Data Handling and Privacy
 
-This skill is instruction-only — it tells the assistant how to behave. It does not make network calls, run shell commands, or transmit data on its own.
+Be honest with the user about what this skill does. It directs the assistant to use tools the user has connected (Gmail, LinkedIn, browser automation, web search) when those tools are available. This skill does not bundle or ship those tools — it instructs the assistant to invoke whichever ones the user has authorized. The data those tools touch is real and sensitive: emails, recruiter contacts, salary figures, offer details, and personal employment history.
 
-- **Local-only storage**: All tracker data (`applications.md`, `resumes/`, drafts, dashboards) is written to the user's current working directory. Nothing is sent to any external service by this skill.
-- **No telemetry, no logging, no third-party sharing**: The skill does not collect, transmit, or share usage data, application contents, salary information, or contact details.
-- **Gmail and LinkedIn access is user-mediated**: Any email or LinkedIn lookups happen through tools the user has already connected (MCP servers, browser extensions, etc.) using the user's own credentials and permissions. This skill does not bundle, request, or store credentials.
-- **Confirmation before writes from external sources**: When auto-detecting applications from Gmail or LinkedIn, the skill surfaces findings to the user and only adds entries the user explicitly confirms. It does not silently ingest data into the tracker.
-- **Sensitive data stays in the tracker file**: Salary figures, offer details, and recruiter contact information appear only in the local tracker file. The skill does not echo this data into outputs beyond what the user is actively working on.
-- **No destructive operations without consent**: The skill does not delete entries, overwrite notes, or modify resumes without explicit user confirmation.
+The skill itself does not transmit data, run background processes, or persist anything outside the user's working directory. What it directs the assistant to do, the user can see and stop at any time.
+
+**Data scope and consent rules**
+
+- **Local storage by the skill**: `applications.md`, `resumes/`, drafts, dashboards, and any generated documents are written to the user's current working directory. The skill does not write data anywhere else.
+- **Tool-mediated reads**: When the skill instructs the assistant to search Gmail, browse LinkedIn, or run a web search, those requests go through tools the user has explicitly connected, under the user's own credentials and permissions. Revoking access to a tool stops the related behavior.
+- **Confirmation before writes from external sources**: When the assistant finds candidate applications via Gmail or LinkedIn, it must present the findings to the user and wait for explicit confirmation before adding entries to the tracker. Silent ingestion is not allowed.
+- **Sensitive fields stay scoped**: Salary figures, offer details, and recruiter contact information belong in the tracker file. The assistant should not paste these into drafts, summaries, or third-party-bound messages unless the user has asked for that specific output.
+- **No destructive operations without consent**: The assistant must not delete entries, overwrite notes, or modify resumes without explicit user confirmation.
+- **No telemetry by the skill**: The skill does not collect or transmit usage data, file contents, or any other information back to its author, ClawHub, or any third party. (Connected tools may have their own logging — the user should consult those tools' policies.)
+
+**What a cautious user should know before installing**
+
+This skill is most useful when Gmail and LinkedIn tools are connected, but those connections are not required. Users uncomfortable with broad Gmail or LinkedIn access can use the skill in tracker-only mode by simply not connecting those tools — the assistant will then work from what the user tells it directly, and every workflow above still functions.
 
 ---
 

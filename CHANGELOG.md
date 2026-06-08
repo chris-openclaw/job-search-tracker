@@ -4,10 +4,19 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this skill adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] — 2026-06-08
+
+### Changed
+- Rewrote **Data Handling and Privacy** section in SKILL.md to accurately describe assistant-mediated use of Gmail, LinkedIn, browser, and web-search tools, rather than understating tool usage. The skill instructs the assistant to invoke those tools when connected; this version is explicit about scope, consent rules, and what stays local
+- Narrowed the activation triggers in the `description` frontmatter to require explicit job-search context (e.g., a named company in a hiring context) and reduce over-activation on generic email, calendar, or follow-up phrases
+
+### Added
+- **Permissions and Privacy** section in README.md so users see the scope of access (Gmail, LinkedIn, browser, web search, local files) before installing, along with a "tracker-only mode" path for users who'd rather not connect Gmail or LinkedIn
+
 ## [1.1.1] — 2026-06-08
 
 ### Added
-- **Data Handling and Privacy** section clarifying that the skill is instruction-only, stores all data locally in the user's working directory, makes no external network calls of its own, uses no telemetry, and gates all writes from Gmail/LinkedIn behind explicit user confirmation
+- **Data Handling and Privacy** section (later rewritten in 1.1.2 to remove an intent-code divergence that misrepresented tool usage)
 
 ## [1.1.0] — 2026-05-12
 
