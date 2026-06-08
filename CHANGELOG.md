@@ -4,6 +4,11 @@ All notable changes to this skill will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this skill adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] — 2026-06-08
+
+### Added
+- **Data Handling and Privacy** section clarifying that the skill is instruction-only, stores all data locally in the user's working directory, makes no external network calls of its own, uses no telemetry, and gates all writes from Gmail/LinkedIn behind explicit user confirmation
+
 ## [1.1.0] — 2026-05-12
 
 ### Added

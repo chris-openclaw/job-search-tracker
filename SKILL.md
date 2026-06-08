@@ -1,6 +1,6 @@
 ---
 name: job-search-tracker
-version: "1.1.0"
+version: "1.1.1"
 description: "Use this skill when someone is job searching, tracking applications, or needs help at any stage of the hiring pipeline. Key triggers: 'I applied to,' 'just submitted an application,' 'track this job,' 'job search dashboard,' 'what needs attention,' 'any responses yet,' 'help me follow up,' 'haven't heard back,' 'prep me for an interview,' 'interview tomorrow,' 'draft a cover letter,' 'write a follow-up email,' 'thank-you note,' 'got rejected,' 'got an offer,' 'got an offer letter,' 'help me negotiate,' 'salary negotiation,' 'which resume should I send,' 'does this sound desperate,' 'what jobs have I applied to,' 'check my email for applications,' referencing a specific company they've applied to. Covers: application tracking, pipeline management, stale application reminders, Gmail scanning for application emails, LinkedIn application tracking, interview prep with company briefs and mock questions, cover letter drafting, follow-up email drafting, salary negotiation support, resume-version recommendations, outreach tone checks, and job search analytics."
 metadata:
   openclaw:
@@ -400,6 +400,19 @@ If the user wants help responding:
 1. Run the tone check pass on the pasted draft
 2. Flag specific phrases, not the whole draft
 3. Suggest targeted revisions (don't rewrite top to bottom unless asked)
+
+---
+
+## Data Handling and Privacy
+
+This skill is instruction-only — it tells the assistant how to behave. It does not make network calls, run shell commands, or transmit data on its own.
+
+- **Local-only storage**: All tracker data (`applications.md`, `resumes/`, drafts, dashboards) is written to the user's current working directory. Nothing is sent to any external service by this skill.
+- **No telemetry, no logging, no third-party sharing**: The skill does not collect, transmit, or share usage data, application contents, salary information, or contact details.
+- **Gmail and LinkedIn access is user-mediated**: Any email or LinkedIn lookups happen through tools the user has already connected (MCP servers, browser extensions, etc.) using the user's own credentials and permissions. This skill does not bundle, request, or store credentials.
+- **Confirmation before writes from external sources**: When auto-detecting applications from Gmail or LinkedIn, the skill surfaces findings to the user and only adds entries the user explicitly confirms. It does not silently ingest data into the tracker.
+- **Sensitive data stays in the tracker file**: Salary figures, offer details, and recruiter contact information appear only in the local tracker file. The skill does not echo this data into outputs beyond what the user is actively working on.
+- **No destructive operations without consent**: The skill does not delete entries, overwrite notes, or modify resumes without explicit user confirmation.
 
 ---
 
